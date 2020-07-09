@@ -184,6 +184,7 @@ func (w *WebsocketProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		for {
 			msgType, msg, err := src.ReadMessage()
 			if err != nil {
+				log.Printf("Error reading from websocket: %v", err)
 				m := websocket.FormatCloseMessage(websocket.CloseNormalClosure, fmt.Sprintf("%v", err))
 				if e, ok := err.(*websocket.CloseError); ok {
 					if e.Code != websocket.CloseNoStatusReceived {
@@ -196,6 +197,7 @@ func (w *WebsocketProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			}
 			err = dst.WriteMessage(msgType, msg)
 			if err != nil {
+				log.Printf("Error writing to websocket: %v", err)
 				errc <- err
 				break
 			}
